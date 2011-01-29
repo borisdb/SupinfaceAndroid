@@ -1,4 +1,4 @@
-package com.labojava.supinface.android;
+package com.labojava.supinface.android.model;
 
 import java.util.ArrayList;
 import java.util.List;

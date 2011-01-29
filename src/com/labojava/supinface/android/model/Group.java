@@ -1,4 +1,4 @@
-package com.labojava.supinface.android;
+package com.labojava.supinface.android.model;
 
 public class Group {
 	

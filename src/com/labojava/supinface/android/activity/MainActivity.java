@@ -1,4 +1,4 @@
-package com.labojava.supinface.android;
+package com.labojava.supinface.android.activity;
 
 import java.io.IOException;
 
@@ -10,6 +10,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.labojava.supinface.android.R;
+import com.labojava.supinface.android.R.layout;
 import com.labojava.supinface.android.io.StudentRequest;
 import com.labojava.supinface.android.tools.Tools;
 
