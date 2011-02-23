@@ -5,11 +5,47 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import com.labojava.supinface.android.preferences.UserPreferences;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 public class Tools {
-	  
+	
+	/**
+	 * 
+	 * @author boris
+	 *
+	 * @param ctx
+	 * @return true si un login et un password sont enregistrés dans les paramètres
+	 */
+	public static boolean isReady(Context ctx)
+	{
+		SharedPreferences preferences;
+		preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+		
+		//Si la préférence Login n'existe pas  retourne "n/a"
+		if (preferences.getString(UserPreferences.LOGIN, "n/a").equals("n/a")
+			|| preferences.getString(UserPreferences.PASSWORD, "n/a").equals("n/a")) {
+		    return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+	/**
+	 * 
+	 * @author boris
+	 *
+	 * @param is InputStream a convertir
+	 * @return l'inputStream convertie en String
+	 */
 	public static String convertStreamToString(InputStream is)
 	    {
-		/*
+			/*
 	         * To convert the InputStream to String we use the BufferedReader.readLine()
 	         * method. We iterate until the BufferedReader return null which means
 	         * there's no more data to read. Each line will appended to a StringBuilder
@@ -35,5 +71,9 @@ public class Tools {
 	        return sb.toString();
 	    }
 	
+	public static boolean isAuth()
+	{
+		return false;
+	}
 		
 }

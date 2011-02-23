@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="logout">Logout</string>
     <string name="hello">Hello World,Welcome to Supinface!</string>
     <string name="app_name">Supinface</string>
+<string name="login_hint">Login</string>
+<string name="password_hint">Password</string>
+<string name="ok">OK</string>
+<string name="bad_login_password">Bad login/password</string>
+<string name="confirm_title">confirm</string>
+<string name="logout_confirmation_message">sure?</string>
+<string name="yes">yes</string>
+<string name="no">no</string>
+<string name="reset_done_msg">Preferences reset : done</string>
 </resources>
