@@ -4,17 +4,15 @@
 package com.labojava.supinface.android.activity;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 
-import android.R.bool;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -36,6 +34,8 @@ import com.labojava.supinface.android.tools.Tools;
  */
 public class LoginActivity extends Activity{
 
+	private LoginTask mLoginTask;
+	
 	private EditText mLoginEditText;
 	private EditText mPasswordEditText;
 	private Button mLoginButton;
@@ -75,64 +75,22 @@ public class LoginActivity extends Activity{
 			public void onClick(View v) {
 				String _login=mLoginEditText.getText().toString();
 				String _password=mPasswordEditText.getText().toString();
-				if(login(_login,_password))
+//				if(login(_login,_password))
+//				{
+//					Toast.makeText(getApplicationContext(), "Authentication Successful", Toast.LENGTH_LONG).show();
+//					switchToMainActivity();
+//				}
+				
+				if(mLoginTask == null || !mLoginTask.getStatus().equals(AsyncTask.Status.RUNNING))
 				{
-					Toast.makeText(getApplicationContext(), "Authentication Successful", Toast.LENGTH_LONG).show();
-					switchToMainActivity();
+					mLoginTask = new LoginTask();
+					mLoginTask.execute(_login,_password);
+				}
+				else{
+					Toast.makeText(getApplicationContext(), "tache déjà en cours", Toast.LENGTH_LONG).show();
 				}
 			}
 		});
-	}
-	
-	
-	private boolean login(String login, String password)
-	{
-		String content=null;
-		HttpResponse response = StudentRequest.login(login, password);
-		HttpEntity entity= response.getEntity();
-		if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK)
-		{
-			try {
-				content = Tools.convertStreamToString(entity.getContent());
-				prefsEditor.putString(UserPreferences.TOKEN, content);
-				prefsEditor.putString(UserPreferences.LOGIN, login);
-				prefsEditor.putString(UserPreferences.PASSWORD, password);
-				prefsEditor.commit();
-				return true;
-			} catch (IllegalStateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		else
-			if(response.getStatusLine().getStatusCode()==HttpStatus.SC_UNAUTHORIZED)
-			{
-				try {
-					content = Tools.convertStreamToString(entity.getContent());
-				} catch (IllegalStateException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				if(content.equals("bad_login_password"))
-				{
-					Toast toast =Toast.makeText(getApplicationContext(), R.string.bad_login_password, Toast.LENGTH_LONG);
-					toast.setGravity(Gravity.CENTER, 0, -40);
-					toast.show();
-				}
-			}
-		else
-		if(response.getStatusLine().getStatusCode()==HttpStatus.SC_NOT_FOUND)
-		{
-			Log.e("Supinface","Login : 404, Not found");
-		}
-		return false;
 	}
 	
 	private void switchToMainActivity()
@@ -142,4 +100,109 @@ public class LoginActivity extends Activity{
 		finish();
 	}
 	
-}
+	public void finishLoginActivity()
+	{
+		this.finish();
+	}
+	
+	public class LoginTask extends AsyncTask<String , String, Boolean>{
+
+		/* (non-Javadoc)
+		 * @see android.os.AsyncTask#doInBackground(Params[])
+		 */
+		@Override
+		protected Boolean doInBackground(String... params) {
+			String login = params[0];
+			String password = params[1];
+			String content=null;
+			if(Tools.haveInternet(getApplicationContext())==false)
+			{
+				publishProgress("Pas de connexion internet");
+				return false;
+			}
+			else
+			{
+				HttpResponse response;
+				try {
+					response = StudentRequest.login(login, password);
+				} catch (IOException e1) {
+					publishProgress(e1.getMessage());
+					return false;
+				}
+				HttpEntity entity= response.getEntity();
+			
+				if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK)
+				{
+					try {
+						content = Tools.convertStreamToString(entity.getContent());
+						prefsEditor.putString(UserPreferences.TOKEN, content);
+						prefsEditor.putString(UserPreferences.LOGIN, login);
+						prefsEditor.putString(UserPreferences.PASSWORD, password);
+						prefsEditor.commit();
+						return true;
+					} catch (IllegalStateException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				else
+					if(response.getStatusLine().getStatusCode()==HttpStatus.SC_UNAUTHORIZED)
+					{
+						try {
+							content = Tools.convertStreamToString(entity.getContent());
+						} catch (IllegalStateException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						if(content.equals("bad_login_password"))
+						{
+//							Toast toast =Toast.makeText(getApplicationContext(), R.string.bad_login_password, Toast.LENGTH_LONG);
+//							toast.setGravity(Gravity.CENTER, 0, -40);
+//							toast.show();
+							publishProgress(getString(R.string.bad_login_password));
+							
+						}
+					}
+				else
+				if(response.getStatusLine().getStatusCode()==HttpStatus.SC_NOT_FOUND)
+				{
+					Log.e("Supinface","Login : 404, Not found");
+				}
+				return false;
+			}
+		}
+		
+		/* (non-Javadoc)
+		 * @see android.os.AsyncTask#onProgressUpdate(Progress[])
+		 */
+		@Override
+		protected void onProgressUpdate(String... values) {
+			Toast toast =Toast.makeText(getApplicationContext(), values[0], Toast.LENGTH_LONG);
+			toast.setGravity(Gravity.CENTER, 0, -40);
+			toast.show();
+		}
+
+		/* (non-Javadoc)
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if(result==true)
+			{
+				Toast.makeText(getApplicationContext(), "Authentication Successful", Toast.LENGTH_LONG).show();
+				switchToMainActivity();
+			}
+			else
+			{
+				Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+}	

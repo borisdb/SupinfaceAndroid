@@ -23,8 +23,9 @@ public class StudentRequest {
 	 * @param login Le login
 	 * @param password le password
 	 * @return la reponse HttpResponse
+	 * @throws IOException 
 	 */
-	public static HttpResponse login(String login,String password)
+	public static HttpResponse login(String login,String password) throws IOException
 	{
 		try {
 			login=URLEncoder.encode(login,"utf-8");
@@ -37,6 +38,7 @@ public class StudentRequest {
 		String _url=URL+"auth/login/"+login+"/"+password;
 		HttpGet httpget= new HttpGet(_url);
 		HttpClient httpClient=new DefaultHttpClient();
+		//httpClient.getParams().setParameter("http.socket.timeout", new Integer(10000));
 		HttpResponse response = null;
 		try {
 			response = httpClient.execute(httpget);
@@ -45,8 +47,8 @@ public class StudentRequest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		}
 		return response;
 	}

@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import com.labojava.supinface.android.preferences.UserPreferences;
-
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
+
+import com.labojava.supinface.android.preferences.UserPreferences;
 
 public class Tools {
 	
@@ -75,5 +77,21 @@ public class Tools {
 	{
 		return false;
 	}
+	
+	/*
+	*@return boolean return true if the application can access the internet
+	*/
+	public static boolean haveInternet(Context ctx){
+		NetworkInfo info=(NetworkInfo)((ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+		if(info==null || !info.isConnected()){
+			return false;
+		}
+		if(info.isRoaming()){
+			//here is the roaming option you can change it if you want to disable internet while roaming, just return false
+			return true;
+		}
+		return true;
+	}
+	// see http://androidsnippets.com/have-internet
 		
 }

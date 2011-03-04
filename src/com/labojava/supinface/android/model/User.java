@@ -1,7 +1,5 @@
 package com.labojava.supinface.android.model;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class User {
 	
