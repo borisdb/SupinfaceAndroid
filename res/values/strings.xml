@@ -12,4 +12,6 @@
 <string name="yes">yes</string>
 <string name="no">no</string>
 <string name="reset_done_msg">Preferences reset : done</string>
+<string name="authentication_success">Authentication Successful</string>
+<string name="login_process_in_progress">Login process in progress...</string>
 </resources>

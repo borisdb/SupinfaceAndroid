@@ -75,11 +75,6 @@ public class LoginActivity extends Activity{
 			public void onClick(View v) {
 				String _login=mLoginEditText.getText().toString();
 				String _password=mPasswordEditText.getText().toString();
-//				if(login(_login,_password))
-//				{
-//					Toast.makeText(getApplicationContext(), "Authentication Successful", Toast.LENGTH_LONG).show();
-//					switchToMainActivity();
-//				}
 				
 				if(mLoginTask == null || !mLoginTask.getStatus().equals(AsyncTask.Status.RUNNING))
 				{
@@ -87,7 +82,7 @@ public class LoginActivity extends Activity{
 					mLoginTask.execute(_login,_password);
 				}
 				else{
-					Toast.makeText(getApplicationContext(), "tache déjà en cours", Toast.LENGTH_LONG).show();
+					Toast.makeText(getApplicationContext(),R.string.login_process_in_progress, Toast.LENGTH_LONG).show();
 				}
 			}
 		});
@@ -163,16 +158,17 @@ public class LoginActivity extends Activity{
 						
 						if(content.equals("bad_login_password"))
 						{
-//							Toast toast =Toast.makeText(getApplicationContext(), R.string.bad_login_password, Toast.LENGTH_LONG);
-//							toast.setGravity(Gravity.CENTER, 0, -40);
-//							toast.show();
 							publishProgress(getString(R.string.bad_login_password));
-							
+						}
+						else
+						{
+							publishProgress("Unauthorized");
 						}
 					}
 				else
 				if(response.getStatusLine().getStatusCode()==HttpStatus.SC_NOT_FOUND)
 				{
+					publishProgress("Server : Not found");
 					Log.e("Supinface","Login : 404, Not found");
 				}
 				return false;
@@ -196,12 +192,8 @@ public class LoginActivity extends Activity{
 		protected void onPostExecute(Boolean result) {
 			if(result==true)
 			{
-				Toast.makeText(getApplicationContext(), "Authentication Successful", Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), R.string.authentication_success, Toast.LENGTH_LONG).show();
 				switchToMainActivity();
-			}
-			else
-			{
-				Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
 			}
 		}
 	}

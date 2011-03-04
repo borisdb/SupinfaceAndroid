@@ -37,7 +37,6 @@ public class StudentRequest {
 		String _url=URL+"auth/login/"+login+"/"+password;
 		HttpGet httpget= new HttpGet(_url);
 		HttpClient httpClient=new DefaultHttpClient();
-		//httpClient.getParams().setParameter("http.socket.timeout", new Integer(10000));
 		HttpResponse response = null;
 		try {
 			response = httpClient.execute(httpget);
