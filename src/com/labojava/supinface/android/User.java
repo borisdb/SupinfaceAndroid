@@ -16,7 +16,7 @@ public class User {
 	private String campus;	
 	List<Skill> mySkills;
 	List<Group> myGroups;
-	private Contact myContact;
+	//private Contact myContact;
 	
 	//---------CONSTRUCTOR------------
 	User()
